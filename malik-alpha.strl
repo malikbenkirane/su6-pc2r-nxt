@@ -1,0 +1,54 @@
+module modele :
+
+input  ENTER, ESCAPE, LEFT, RIGHT;
+input  A_isMoving, B_isMoving, C_isMoving;
+input  Distance : integer, Depassement_Lumiere, Sound;
+input  Touch;
+
+output A_Vitesse : integer, B_Vitesse : integer, C_Vitesse : integer;
+output A_Avance, B_Avance, C_Avance;
+output tmpsig;
+output LCD : string, LCDint : integer, LCDfloat : float;
+output A_Recul, B_Recul, C_Recul;
+output A_Stop, B_Stop, C_Stop;
+output Bip;
+sensor Light : float;
+
+loop
+abort
+	if ?Light < 400.0f then
+		var utime := 0;
+		emit A_Stop;
+		emit C_Stop;
+		trap UTurn, StartTurn in
+			loop
+				emit A_Recul;
+				emit C_Avance;
+				utime := utime + 1;
+				if ?Light > 400.0f then
+					exit StartTurn;
+				end if
+			each tick
+			handle UTurn do
+				repeat (utime / 2) times
+					emit A_Avance;
+					emit C_Recul;
+				end repeat;
+				emit A_Stop;
+				emit C_Stop;
+				emit A_Avance;
+				emit C_Avance;
+			handle StartTurn do
+			loop
+				if ?Light < 400.0f then
+					emit A_Stop;
+					emit C_Stop;
+					exit UTurn;
+				end if
+			each tick
+		end trap
+	end if
+when ESCAPE
+each tick
+
+end module
