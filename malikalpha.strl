@@ -1,0 +1,61 @@
+module malikalpha :
+
+input  ENTER, ESCAPE, LEFT, RIGHT;
+input  A_isMoving, B_isMoving, C_isMoving;
+input  Distance : integer, Depassement_Lumiere, Sound;
+input  Touch;
+
+output A_Vitesse : integer, B_Vitesse : integer, C_Vitesse : integer;
+output A_Avance, B_Avance, C_Avance;
+output tmpsig;
+output LCD : string, LCDint : integer, LCDfloat : float;
+output A_Recul, B_Recul, C_Recul;
+output A_Stop, B_Stop, C_Stop;
+output Bip;
+sensor Light : float;
+
+abort
+	loop
+	emit A_Avance;
+	emit C_Avance;
+	if ?Light < 400.0f then
+		var utime := 0 : integer in
+			emit A_Stop;
+			emit C_Stop;
+			trap StartTurn in
+				loop
+					emit A_Recul;
+					emit C_Avance;
+					if ?Light > 400.0f then
+						exit StartTurn;
+					end if
+				each tick
+			end trap;
+			trap UTurn in
+				loop
+					utime := utime + 1;
+					if ?Light < 400.0f then
+						emit A_Stop;
+						emit C_Stop;
+						exit UTurn;
+					end if
+				each tick
+			end trap;
+			repeat (utime / 2) times
+				emit A_Avance;
+				emit C_Recul;
+				pause;
+			end repeat;
+			emit A_Stop;
+			emit C_Stop;
+			emit A_Avance;
+			emit C_Avance;
+		end var
+
+	end if;
+	pause
+	end loop
+when ESCAPE
+
+
+end module
