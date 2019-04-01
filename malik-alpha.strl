@@ -17,7 +17,7 @@ sensor Light : float;
 loop
 abort
 	if ?Light < 400.0f then
-		var utime := 0
+		var utime := 0 in
 		emit A_Stop;
 		emit C_Stop;
 		trap UTurn, StartTurn in
@@ -47,6 +47,7 @@ abort
 				end if
 			each tick
 		end trap
+		end var
 	end if
 when ESCAPE
 each tick
